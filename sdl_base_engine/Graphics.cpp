@@ -6,6 +6,7 @@
 
 #include "Graphics.hpp"
 #include "Engine.hpp"
+#include "Utility.hpp"
 
 #include "SDL2/SDL.h"
 #include "SDL2/SDL_render.h"
@@ -79,10 +80,7 @@ Graphics_System::~Graphics_System()
 
 void Graphics_System::load_default_font(string font_location)
 {
-	ifstream file(font_location, ios::in | ios::binary);
-	file.read(this->m_default_font.data(), 768);
-
-	file.close();
+	load_bin_file(font_location, &this->m_default_font);
 }
 
 void Graphics_System::update()
