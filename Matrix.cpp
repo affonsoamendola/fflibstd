@@ -1,5 +1,3 @@
-#include  <iostream>
-
 /* 	
 	Copyright Affonso Amendola 2019
 
@@ -12,6 +10,8 @@
 
 	Be Excellent to Each Other.
 */
+
+#include  <iostream>
 
 #include "Matrix.hpp"
 
