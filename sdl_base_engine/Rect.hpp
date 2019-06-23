@@ -46,6 +46,7 @@ public:
 	Recti(const Point2 bounds[2]);
 	Recti(const std::vector<Point2> bounds);
 	Recti(const Point2& v0, const Point2& v1);
+	Recti(const Point2& size);
 
 	~Recti(){};
 

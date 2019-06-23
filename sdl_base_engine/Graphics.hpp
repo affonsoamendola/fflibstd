@@ -33,11 +33,11 @@ private:
 	std::vector<char> m_default_font;
 	std::vector<unsigned char> m_screen_pixels; //APPARENTLY stored in BGRA, take that into account allways
 
-	std::vector<Texture*> m_texture_holder;
-
 	void load_default_font(std::string font_location);
 
 public:
+	std::vector<Texture*> m_texture_holder;
+
 	const unsigned int m_screen_width = 320;
 	const unsigned int m_screen_height = 200;
 
@@ -62,6 +62,7 @@ public:
 	~Graphics_System();
 
 	void update();
+	void render();
 
 	void set_pixel(unsigned int x, unsigned int y, Color color);
 	void get_pixel(unsigned int x, unsigned int y);
@@ -81,6 +82,7 @@ public:
 	void draw_text(unsigned int x, unsigned int y, double value, Color color);
 
 	void blit_texture(Texture* to_render, const Recti& src, const Point2& dst);
+	void blit_texture(Texture* to_render, const Point2& dst);
 };
 
 class Texture
@@ -90,6 +92,8 @@ private:
 public:
 	SDL_Surface* m_surface = nullptr;
 	SDL_Texture* m_texture = nullptr;
+
+	Recti m_rect = {{0, 0}, {0, 0}};
 	
 	inline void set_opacity(unsigned char opacity)
 	{

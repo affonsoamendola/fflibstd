@@ -37,8 +37,11 @@ Texture::Texture(string file_location, Graphics_System& g_system)
 
 	cout << "Done." << std::endl;
 
+	this->m_rect = Recti({0, 0}, Point2(this->m_surface->w, this->m_surface->h));
+
 	if(SDL_SetTextureColorMod(this->m_texture, 255, 255, 255) == -1) 	SDL_Log("\nTexture Color Modulation Not Supported on this renderer");
 	if(SDL_SetTextureAlphaMod(this->m_texture, 255) == -1) 				SDL_Log("\nTexture Alpha Modulation Not Supported on this renderer");
+	SDL_SetTextureBlendMode(this->m_texture, SDL_BLENDMODE_BLEND);
 }
 
 Texture::~Texture()
@@ -114,6 +117,7 @@ Graphics_System::Graphics_System(Engine * parent_engine) : Engine_System(parent_
 													SDL_TEXTUREACCESS_STREAMING,
 													this->m_screen_width, this->m_screen_height
 												);
+	SDL_SetTextureBlendMode(this->m_screen_surface, SDL_BLENDMODE_BLEND);
 
 	this->load_default_font("8x8Font.fnt");
 
@@ -140,11 +144,18 @@ void Graphics_System::load_default_font(string font_location)
 	load_bin_file(font_location, &this->m_default_font);
 }
 
-void Graphics_System::update()
+void Graphics_System::update(){};
+
+void Graphics_System::render()
 {
+	this->m_parent_engine->m_gui.render();
+
 	if(this->m_show_mouse) this->draw_cursor();
-	if(this->m_show_fps) this->draw_text(this->m_screen_width - 40, 0, this->m_parent_engine->m_fps, COLOR_RED);
-	if(this->m_show_frame_time) this->draw_text(this->m_screen_width - 40, 8, this->m_parent_engine->m_frame_time * 1000, COLOR_RED);
+	if(this->m_show_fps) 
+		this->draw_text(this->m_screen_width - 40, 0, this->m_parent_engine->m_avg_fps, COLOR_RED);
+	if(this->m_show_frame_time) 
+		this->draw_text(this->m_screen_width - 40, 8, this->m_parent_engine->m_avg_frame_time * 1000, COLOR_RED);
+	this->draw_text(this->m_screen_width - 40, 16, this->m_parent_engine->m_dropped_frames, COLOR_RED);
 
     SDL_UpdateTexture	(	this->m_screen_surface,
     						NULL,
@@ -153,8 +164,6 @@ void Graphics_System::update()
     					);
 
     SDL_RenderCopy(this->m_renderer, this->m_screen_surface, NULL, NULL);
-
-    this->blit_texture(this->m_texture_holder[0], Recti({0, 0}, {128, 128}), Point2({2, 2}));
 
     SDL_RenderPresent(this->m_renderer);
 
@@ -267,7 +276,20 @@ void Graphics_System::draw_text(unsigned int x, unsigned int y, double value, Co
 void Graphics_System::blit_texture(Texture* to_render, const Recti& src, const Point2& dst)
 {
 	SDL_Rect src_sdl = src.to_SDL();
-	SDL_Rect dst_sdl = src.scale(this->m_pixel_scale).move(dst * (int)this->m_pixel_scale).to_SDL();
+
+	Recti scaled = src.scale(this->m_pixel_scale);
+
+	SDL_Rect dst_sdl;
+
+	dst_sdl.x = dst[0] * this->m_pixel_scale;
+	dst_sdl.y = dst[1] * this->m_pixel_scale;
+	dst_sdl.w = scaled.width();
+	dst_sdl.h = scaled.height();
 
 	SDL_RenderCopy(this->m_renderer, to_render->m_texture, &src_sdl, &dst_sdl);
+}
+
+void Graphics_System::blit_texture(Texture* to_render, const Point2& dst)
+{
+	this->blit_texture(to_render, to_render->m_rect, dst);
 }
