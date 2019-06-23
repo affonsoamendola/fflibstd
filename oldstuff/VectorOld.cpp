@@ -1,9 +1,14 @@
 /* 	
+	DEPRECATED, use the new ones instead.
+
 	Copyright Affonso Amendola 2019
 
 	Fofonso's Vector, version 1.0
 
-	This is part of my standard usage library, I use this in many of my things, it's pretty kewl.
+	This was part of my standard usage library, I used this in many of my things, it was pretty kewl.
+
+	So, I changed this to use C++ templates instead of defining everything for ints, doubles, 2 and 3 dim
+	like it would be needed here, so go use Fofonso's Vector v 2.0 or the one im working on right now.
 
 	Distributed under GPLv3, use it to your hearts content,
 	just remember the number one rule:
@@ -12,6 +17,7 @@
 */
 
 #include <cmath>
+#include <limits>
 #include <stdio.h>
 
 #include "Vector.hpp"
@@ -151,6 +157,12 @@ double Vector2::cross(const Vector2& v) {return (this->x * v.y) - (this->y * v.x
 //Dot product
 double Vector2::dot(const Vector2& v) {return (this->x * v.x) + (this->y * v.y);}
 
+//Angle in radians between two vectors
+double Vector2::angle(Vector2& v)
+{
+	return acos(this->dot(v) / this->abs() * v.abs());
+}
+
 //Abs / Length of the vector, using square root of dot product, Could use the sqr x*x+y*y, but,
 //Its really the same thing.
 double Vector2::abs()	{return sqrt(this->dot(*this));}
@@ -176,6 +188,44 @@ Vector2 Vector2::rotate(double ang_rad)
 	return new_v;
 }
 
+void Vector2::print()
+{
+	printf("%f %f\n", this->x, this->y);
+}
+
+//Checks if vertex is on the left/on/right side of the infinite line passing through v0 and v1
+//Returns 1 if left, 0, if on, and -1 if right
+int is_left(const Vector2& v0, const Vector2& v1, const Vector2& vertex)
+{
+	return (((v1.x - v0.x) * (vertex.y - v0.y)) - ((vertex.x - v0.x) * (v1.y - v0.y)));
+}
+
+//Checks if the lines defined by v1 and v2, and, v3 and v4 intersect,
+//puts the intersection point in intersect_vector and
+//returns 1 in case of intersection, 0 in case of non intersection, and -1 in case of collinear lines
+int is_intersection(Vector2& v1, Vector2& v2, Vector2& v3, Vector2& v4, Vector2& intersect_vector)
+{
+	double denominator = ((v4.x - v3.x) * (v1.y - v2.y) - (v1.x - v2.x) * (v4.y - v3.y));
+
+	if(denominator <= std::numeric_limits<double>::epsilon() && denominator >= -std::numeric_limits<double>::epsilon()) return -1;
+
+	Vector2 len_segment_1;
+
+	double t_a = 	((v3.y - v4.y) * (v1.x - v3.x) + (v4.x - v3.x) * (v1.y - v3.y)) / denominator;
+
+	//Long live Total Biscuit, we really miss you, 
+	//wish you could review my shitty game... maybe in another life.
+	double t_b = 	((v1.y - v2.y) * (v1.x - v3.x) + (v2.x - v1.x) * (v1.y - v3.y)) / denominator;
+
+	if(t_a >= 0. && t_a <= 1. && t_b >= 0. && t_b <= 1.)
+	{
+		len_segment_1 = v2 - v1;
+		intersect_vector = v1 + (len_segment_1 * t_a);
+
+		return 1;
+	}
+	else return 0;
+}
 
 Vector3::Vector3()
 {}
@@ -299,6 +349,12 @@ Vector3 Vector3::cross(const Vector3& v)
 //Dot Product
 double Vector3::dot(const Vector3& v) {return (this->x * v.x) + (this->y * v.y) + (this->z * v.z);}
 
+//Angle in radians between two vectors
+double Vector3::angle(Vector3& v)
+{
+	return acos(this->dot(v) / this->abs() * v.abs());
+}
+
 //Abs / Length of the vector
 double Vector3::abs()	{return sqrt(this->dot(*this));}
 
@@ -310,6 +366,11 @@ Vector3 Vector3::unit()
 	new_v = (*this) / this->abs();
 
 	return new_v;
+}
+
+void Vector3::print()
+{
+	printf("%f %f %f\n", this->x, this->y, this->z);
 }
 
 #ifdef _FF_POINT_DEF

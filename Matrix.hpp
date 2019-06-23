@@ -13,9 +13,7 @@
 	Be Excellent to Each Other.
 */
 
-#ifdef _FF_VECTOR_DEF
 class Vector3;
-#endif
 
 class Matrix33
 {
@@ -41,10 +39,7 @@ public:
 	Matrix33& operator/= (double s);
 
 	Matrix33 operator- ();
-
-#ifdef _FF_VECTOR_DEF
 	Vector3 operator* (Vector3& v);
-#endif
 
 	void print();
 };

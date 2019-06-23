@@ -17,6 +17,7 @@
 
 #include <vector>
 #include <cmath>
+#include <iostream>
 
 template<typename T, int vector_dimension>
 class Vector
@@ -66,7 +67,7 @@ public:
 	inline Vector<T, vector_dimension> unit();
 	//inline Vector<T, vector_dimension>& rotate(double ang_rad);
 
-	inline void print();
+	inline void print() const;
 };
 
 //Non-member functions
@@ -107,5 +108,6 @@ inline Vector<T, vector_dimension> operator/(const T& a, const Vector<T, vector_
 
 typedef Vector<double, 2> Vector2;
 typedef Vector<double, 3> Vector3;
+typedef Vector<int, 2> Point2;
 
 #include "Vector.impl.hpp"

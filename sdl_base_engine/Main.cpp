@@ -12,8 +12,8 @@ int main()
 	{
 		engine.update();
 	}
-	
+
+	cout << "Quitting..." << endl;
+
 	return 0;
 }
-
-

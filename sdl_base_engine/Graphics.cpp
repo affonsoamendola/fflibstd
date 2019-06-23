@@ -7,22 +7,73 @@
 #include "Graphics.hpp"
 #include "Engine.hpp"
 #include "Utility.hpp"
+#include "Rect.hpp"
 
 #include "SDL2/SDL.h"
 #include "SDL2/SDL_render.h"
+#include "SDL2/SDL_image.h"
 
 using namespace std;
+
+Texture::Texture(string file_location, Graphics_System& g_system)
+{
+	cout << "Loading texture at: " << file_location << "..." << std::flush;
+	
+	this->m_surface = IMG_Load(file_location.c_str());
+
+	if(this->m_surface == nullptr)
+	{
+		SDL_Log("\nFailure opening image file: %s", SDL_GetError());
+		exit(1);
+	}
+
+	this->m_texture = SDL_CreateTextureFromSurface(g_system.m_renderer, this->m_surface);
+
+	if(this->m_texture == nullptr)
+	{
+		SDL_Log("\nFailure creating texture: %s", SDL_GetError());
+		exit(1);
+	}
+
+	cout << "Done." << std::endl;
+
+	if(SDL_SetTextureColorMod(this->m_texture, 255, 255, 255) == -1) 	SDL_Log("\nTexture Color Modulation Not Supported on this renderer");
+	if(SDL_SetTextureAlphaMod(this->m_texture, 255) == -1) 				SDL_Log("\nTexture Alpha Modulation Not Supported on this renderer");
+}
+
+Texture::~Texture()
+{
+
+	SDL_FreeSurface(this->m_surface);
+}
 
 Graphics_System::Graphics_System(Engine * parent_engine) : Engine_System(parent_engine)
 {
 	this->m_screen_pixels.reserve(this->m_screen_width * this->m_screen_height * 4);
 	this->m_default_font.reserve(768);
 
+	cout << "Initting SDL..." << std::flush;
+
 	if(SDL_Init(SDL_INIT_EVERYTHING) != 0)
 	{
-		SDL_Log("Problem initializing SDL: %s", SDL_GetError());
+		SDL_Log("\nProblem initializing SDL: %s", SDL_GetError());
 		exit(1);
 	}
+
+	cout << "Done." << std::endl;
+
+	cout << "Initting SDL_Image..." << std::flush;
+
+	int imgFlags = IMG_INIT_PNG;
+ 	if( !( IMG_Init(imgFlags) & imgFlags) )
+ 	{
+		SDL_Log("\nProblem initializing SDL_Image: %s", IMG_GetError());
+		exit(1);		
+ 	}
+
+	cout << "Done." << std::endl;
+	
+	cout << "Creating Window..." << std::flush;
 
 	this->m_window = SDL_CreateWindow	(	"Raymarcher test - SDL2",
 											SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
@@ -32,14 +83,18 @@ Graphics_System::Graphics_System(Engine * parent_engine) : Engine_System(parent_
 
 	if(m_window == NULL)
 	{
-		SDL_Log("Problem creating SDL Window: %s", SDL_GetError());
+		SDL_Log("\nProblem creating SDL Window: %s", SDL_GetError());
 		exit(1);
 	}
+
+	cout << "Done." << std::endl;
 
 	this->m_renderer = SDL_CreateRenderer	( 	this->m_window,
 												-1,
 												SDL_RENDERER_ACCELERATED
 											);
+
+	cout << "Creating SDL Renderer..." << std::flush;
 
 	if(m_renderer == NULL)
 	{
@@ -47,17 +102,12 @@ Graphics_System::Graphics_System(Engine * parent_engine) : Engine_System(parent_
 		exit(1);
 	}
 
+	cout << "Done." << std::endl;
+
 	SDL_RendererInfo info;
 	SDL_GetRendererInfo(this->m_renderer, &info);
 
-	cout << "SDL	:	Created Renderer" << endl;
-	cout << "SDL	:	Renderer name = " << info.name << endl;
-	cout << "SDL	:	Texture formats = " << endl;
-
-	for(int i = 0; i < info.num_texture_formats; i++)
-	{
-		cout << SDL_GetPixelFormatName(info.texture_formats[i]) << endl;
-	}
+	cout << "Renderer Type: " << info.name << endl;
 
 	this->m_screen_surface = SDL_CreateTexture	(	this->m_renderer,
 													SDL_PIXELFORMAT_ARGB8888,
@@ -67,14 +117,21 @@ Graphics_System::Graphics_System(Engine * parent_engine) : Engine_System(parent_
 
 	this->load_default_font("8x8Font.fnt");
 
+	this->load_texture("dopefish.png");
+
 	SDL_ShowCursor(0);
 }
 
 Graphics_System::~Graphics_System()
 {
-	cout << "DESTROYING GRAPHICS" << endl;
+	for(int i = 0; i < this->m_texture_holder.size(); i++)
+	{
+		delete this->m_texture_holder[i];
+	}
+
 	SDL_DestroyRenderer(this->m_renderer);
 	SDL_DestroyWindow(this->m_window);
+	IMG_Quit();
 	SDL_Quit();
 }
 
@@ -96,6 +153,9 @@ void Graphics_System::update()
     					);
 
     SDL_RenderCopy(this->m_renderer, this->m_screen_surface, NULL, NULL);
+
+    this->blit_texture(this->m_texture_holder[0], Recti({0, 0}, {128, 128}), Point2({2, 2}));
+
     SDL_RenderPresent(this->m_renderer);
 
 	SDL_SetRenderDrawColor(this->m_renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
@@ -131,6 +191,13 @@ void Graphics_System::clear_screen(Color color)
 			this->set_pixel(x, y, color);
 		}
 	}
+}
+
+void Graphics_System::load_texture(std::string image_location)
+{
+	Texture* new_texture = new Texture(image_location, *this);
+
+	this->m_texture_holder.push_back(new_texture);
 }
 
 void Graphics_System::draw_binary_image(unsigned int x, unsigned int y, 
@@ -195,4 +262,12 @@ void Graphics_System::draw_text(unsigned int x, unsigned int y, double value, Co
 	sprintf(buffer, "%g", value);
 
 	this->draw_text(x, y, string(buffer), color);
+}
+
+void Graphics_System::blit_texture(Texture* to_render, const Recti& src, const Point2& dst)
+{
+	SDL_Rect src_sdl = src.to_SDL();
+	SDL_Rect dst_sdl = src.scale(this->m_pixel_scale).move(dst * (int)this->m_pixel_scale).to_SDL();
+
+	SDL_RenderCopy(this->m_renderer, to_render->m_texture, &src_sdl, &dst_sdl);
 }
