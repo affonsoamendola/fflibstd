@@ -52,43 +52,51 @@ GUI_Window::GUI_Window(const Recti& local_rect, const Point2& position, GUI_Syst
 							m_rect(local_rect)
 {}
 
-void GUI_Window::render()
+
+void draw_9_seg_square(	const Recti& window_rect, const Point2& seg_size, 
+						const Texture* window_texture_holder,
+						Graphics_System* graphics_system)
 {
-	this->m_parent_system->m_parent_engine->m_graphics.blit_texture(&this->m_parent_system->m_gui_texture,
-																	Recti({0, 0}, {8, 8}),
-																	this->m_global_position);
+	graphics_system->blit_texture(	window_texture_holder,
+									Recti(seg_size),
+									window_rect.p0());
 
-	this->m_parent_system->m_parent_engine->m_graphics.blit_texture(&this->m_parent_system->m_gui_texture,
-																	Recti({16, 0}, {24, 8}),
-																	this->m_global_position + Point2(this->m_rect.width()-8, 0));
+	graphics_system->blit_texture(	window_texture_holder,
+									Recti(seg_size).move(Point2(2*seg_size[0], 0)),
+									Point2(window_rect.p1()[0], window_rect.p0()[1]) - Point2(seg_size[0], 0));
 
-	this->m_parent_system->m_parent_engine->m_graphics.blit_texture(&this->m_parent_system->m_gui_texture,
-																	Recti({0, 16}, {8, 24}),
-																	this->m_global_position+ Point2(0, this->m_rect.height()-8));
+	graphics_system->blit_texture(	window_texture_holder,
+									Recti(seg_size).move(Point2(0, 2*seg_size[1])),
+									Point2(window_rect.p0()[0], window_rect.p1()[1]) - Point2(0, seg_size[1]));
 
-	this->m_parent_system->m_parent_engine->m_graphics.blit_texture(&this->m_parent_system->m_gui_texture,
-																	Recti({16, 16}, {24, 24}),
-																	this->m_global_position + Point2(this->m_rect.width()-8, this->m_rect.height()-8));
-
+	graphics_system->blit_texture(	window_texture_holder,
+									Recti(seg_size).move(Point2(2*seg_size[0], 2*seg_size[1])),
+									Point2(window_rect.p1()[0], window_rect.p1()[1]) - Point2(seg_size[0], seg_size[1]));
+/*
 	for(int w = 1; w < (this->m_rect.width() / 8) - 1; w++)
 	{
-		this->m_parent_system->m_parent_engine->m_graphics.blit_texture(&this->m_parent_system->m_gui_texture,
-																		Recti({8, 0}, {16, 8}),
-																		this->m_global_position + Point2(w * 8, 0));
-		this->m_parent_system->m_parent_engine->m_graphics.blit_texture(&this->m_parent_system->m_gui_texture,
-																		Recti({8, 16}, {16, 24}),
-																		this->m_global_position + Point2(w * 8, this->m_rect.height()-8));
+		graphics_system.blit_texture(	window_texture_holder,
+										Recti({8, 0}, {16, 8}),
+										this->m_global_position + Point2(w * 8, 0));
+		graphics_system.blit_texture(	window_texture_holder,
+										Recti({8, 16}, {16, 24}),
+										this->m_global_position + Point2(w * 8, this->m_rect.height()-8));
 	}
 
 	for(int h = 1; h < (this->m_rect.height() / 8) - 1; h++)
 	{
-		this->m_parent_system->m_parent_engine->m_graphics.blit_texture(&this->m_parent_system->m_gui_texture,
-																		Recti({0, 8}, {8, 16}),
-																		this->m_global_position + Point2(0, h * 8));
-		this->m_parent_system->m_parent_engine->m_graphics.blit_texture(&this->m_parent_system->m_gui_texture,
-																		Recti({16, 8}, {24, 16}),
-																		this->m_global_position + Point2(this->m_rect.width()-8, h * 8));
-	}
+		graphics_system.blit_texture(	window_texture_holder,
+										Recti({0, 8}, {8, 16}),
+										this->m_global_position + Point2(0, h * 8));
+		graphics_system.blit_texture(	window_texture_holder,
+										Recti({16, 8}, {24, 16}),
+										this->m_global_position + Point2(this->m_rect.width()-8, h * 8));
+	}*/
+}
+
+void GUI_Window::render()
+{
+	draw_9_seg_square(Recti(10, 10, 30, 30), Point2(8, 8), &this->m_parent_system->m_gui_texture, &this->m_parent_system->m_parent_engine->m_graphics);
 }
 
 GUI_System::GUI_System(	Engine * parent_engine) 

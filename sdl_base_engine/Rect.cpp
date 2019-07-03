@@ -115,6 +115,12 @@ Recti::	Recti(const Point2& size)
 	this->m_bounds[1] = size;
 }
 
+Recti:: Recti(const int x0, const int y0, const int x1, const int y1)
+{
+	this->m_bounds[0] = Point2(x0, y0);
+	this->m_bounds[1] = Point2(x1, y1);
+}
+
 void Recti::sort()
 {
 	if(this->m_bounds[0][0] > this->m_bounds[1][0])

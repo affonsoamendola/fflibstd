@@ -273,7 +273,7 @@ void Graphics_System::draw_text(unsigned int x, unsigned int y, double value, Co
 	this->draw_text(x, y, string(buffer), color);
 }
 
-void Graphics_System::blit_texture(Texture* to_render, const Recti& src, const Point2& dst)
+void Graphics_System::blit_texture(const Texture* to_render, const Recti& src, const Point2& dst)
 {
 	SDL_Rect src_sdl = src.to_SDL();
 
@@ -289,7 +289,7 @@ void Graphics_System::blit_texture(Texture* to_render, const Recti& src, const P
 	SDL_RenderCopy(this->m_renderer, to_render->m_texture, &src_sdl, &dst_sdl);
 }
 
-void Graphics_System::blit_texture(Texture* to_render, const Point2& dst)
+void Graphics_System::blit_texture(const Texture* to_render, const Point2& dst)
 {
 	this->blit_texture(to_render, to_render->m_rect, dst);
 }

@@ -81,8 +81,8 @@ public:
 	void draw_text(unsigned int x, unsigned int y, int value, Color color);
 	void draw_text(unsigned int x, unsigned int y, double value, Color color);
 
-	void blit_texture(Texture* to_render, const Recti& src, const Point2& dst);
-	void blit_texture(Texture* to_render, const Point2& dst);
+	void blit_texture(const Texture* to_render, const Recti& src, const Point2& dst);
+	void blit_texture(const Texture* to_render, const Point2& dst);
 };
 
 class Texture

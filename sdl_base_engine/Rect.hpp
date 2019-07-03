@@ -23,8 +23,11 @@ public:
 
 	void sort();
 
-	inline Vector2 v0(){return this->m_bounds[0];}
-	inline Vector2 v1(){return this->m_bounds[1];}
+	inline Vector2& v0(){return this->m_bounds[0];}
+	inline Vector2& v1(){return this->m_bounds[1];}
+
+	inline Vector2& pos(){return v0();};
+	inline Vector2 size(){return v1() - v0();};
 
 	inline double width(){return this->m_bounds[1][0] - this->m_bounds[0][0];}
 	inline double height(){return this->m_bounds[1][1] - this->m_bounds[0][1];}
@@ -47,6 +50,7 @@ public:
 	Recti(const std::vector<Point2> bounds);
 	Recti(const Point2& v0, const Point2& v1);
 	Recti(const Point2& size);
+	Recti(const int x0, const int y0, const int x1, const int y1);
 
 	~Recti(){};
 
@@ -54,6 +58,14 @@ public:
 
 	inline Point2& p0(){return this->m_bounds[0];}
 	inline Point2& p1(){return this->m_bounds[1];}
+
+	inline Point2 p0() const {return this->m_bounds[0];}
+	inline Point2 p1() const {return this->m_bounds[1];}
+
+	inline Point2& pos(){return p0();};
+	inline Point2 pos() const {return p0();};
+
+	inline Point2 size() const {return p1() - p0();};
 
 	inline int width() const {return this->m_bounds[1][0] - this->m_bounds[0][0];}
 	inline int height() const {return this->m_bounds[1][1] - this->m_bounds[0][1];}
