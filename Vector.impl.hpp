@@ -1,18 +1,17 @@
-/* 	
+#pragma once
+/*  
 	Copyright Affonso Amendola 2019
 
-	Fofonso's Vector Implementation file, version 2.1
+	Fofonso's Standard Library
 
-	This is part of my standard usage library, I use this in many of my things, it's pretty kewl.
+	This is part of my standard library of functions and stuff.
 
 	Distributed under GPLv3, use it to your hearts content,
 	just remember the number one rule:
 
 	Be Excellent to Each Other.
 */
-
-
-#pragma once
+//VECTOR CLASS MEMBER FUNCTIONS:
 
 //Constructors and destructor
 template<typename T, int vector_dimension>
@@ -225,19 +224,30 @@ Vector<T, vector_dimension>& Vector<T, vector_dimension>::rotate(double ang_rad)
 */
 
 template<>
-inline void Vector<double, 2>::print()
+inline void Vector<double, 2>::print() const
 {
-
 	printf("%f %f\n", this->m_values[0], this->m_values[1]);
 }
 
 template<>
-inline void Vector<double, 3>::print()
+inline void Vector<double, 3>::print() const
 {
-
 	printf("%f %f %f\n", this->m_values[0], this->m_values[1], this->m_values[2]);
 }
 
+template<>
+inline void Vector<int, 2>::print() const
+{
+	printf("%d %d\n", this->m_values[0], this->m_values[1]);
+}
+
+template<>
+inline void Vector<int, 3>::print() const
+{
+	printf("%d %d %d\n", this->m_values[0], this->m_values[1], this->m_values[2]);
+}
+
+//------------------------------------------------------------------------------------
 
 template<typename T, int vector_dimension>
 inline Vector<T, vector_dimension> operator+(	const Vector<T, vector_dimension>& v_a, 

@@ -1,9 +1,8 @@
-/* 	
+/*  
 	Copyright Affonso Amendola 2019
+	Fofonso's Standard Library
 
-	Fofonso's Matrix, version 1.0
-
-	This is part of my standard usage library, I use this in many of my things, it's pretty kewl.
+	This is part of my standard library of functions and stuff.
 
 	Distributed under GPLv3, use it to your hearts content,
 	just remember the number one rule:
@@ -15,9 +14,13 @@
 
 #include "Matrix.hpp"
 
+//If the Vector.hpp is in the include folders then assume the user is using it and 
+//enable Fofonso's Vector integration.
 #if __has_include("Vector.hpp")
 #include "Vector.hpp"
 #endif
+
+//MATRIX33 MEMBER FUNCTIONS:
 
 //Constructors
 Matrix33::Matrix33(std::initializer_list<double> contents)
@@ -195,6 +198,8 @@ void Matrix33::print()
 	printf("%f %f %f\n", this->m_contents[3], this->m_contents[4], this->m_contents[5]);
 	printf("%f %f %f\n", this->m_contents[6], this->m_contents[7], this->m_contents[8]);
 }
+
+//---------------------------------------------
 
 //Non member operators
 Matrix33 operator+(Matrix33& a_matrix, Matrix33& b_matrix)

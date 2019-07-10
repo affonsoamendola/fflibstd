@@ -1,11 +1,9 @@
 #pragma once
-
-/* 	
+/*  
 	Copyright Affonso Amendola 2019
+	Fofonso's Standard Library
 
-	Fofonso's Matrix, version 1.0
-
-	This is part of my standard usage library, I use this in many of my things, it's pretty kewl.
+	This is part of my standard library of functions and stuff.
 
 	Distributed under GPLv3, use it to your hearts content,
 	just remember the number one rule:
@@ -60,5 +58,5 @@ Matrix33 operator/ (Matrix33& matrix_a, double s);
 
 Matrix33 operator* (Matrix33& matrix_a, Matrix33& matrix_b);
 
-
+//Constant Identity Matrix, hopefully this is called only once at compile time, or at the beginning of runtime.
 const Matrix33 IDENTITY_MATRIX({1., 0., 0., 0., 1., 0., 0., 0., 1.});

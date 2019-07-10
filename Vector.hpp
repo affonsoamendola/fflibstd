@@ -1,22 +1,37 @@
-/* 	
+#pragma once
+/*  
 	Copyright Affonso Amendola 2019
 
-	Fofonso's Vector, version 2.1
+	Fofonso's Standard Library
 
-	This is part of my standard usage library, I use this in many of my things, it's pretty kewl.
+	This is part of my standard library of functions and stuff.
 
 	Distributed under GPLv3, use it to your hearts content,
 	just remember the number one rule:
 
 	Be Excellent to Each Other.
 */
+/*
+	OKAY...
+	SO...
 
-#pragma once
+	I fucking hate Templates, they go completely against the doctrine of separating declarations from definitions
+	But they are useful when adhering to the DRY principles, So I use the tecnique of purposefully separating them
+	on sort of a hacky way, but this works for me, the actual implementation of the functions are in the .impl.hpp
+	file, I did use them for a few classes in my standard library that in retrospect didn't NEED to be templates
+	(Like Poly.hpp, and arguably Vector.hpp).
+
+	Also the syntax looks horrible
+	Shame on you C++ commitee, shame on you.
+	(I know you guys tried your best, just messing with you, dont worry <3 )
+	(Still hate templates tho)
+*/
 
 #define _FF_VECTOR_DEF
 
 #include <vector>
 #include <cmath>
+#include <iostream>
 
 template<typename T, int vector_dimension>
 class Vector
@@ -66,7 +81,7 @@ public:
 	inline Vector<T, vector_dimension> unit();
 	//inline Vector<T, vector_dimension>& rotate(double ang_rad);
 
-	inline void print();
+	inline void print() const;
 };
 
 //Non-member functions
@@ -107,5 +122,6 @@ inline Vector<T, vector_dimension> operator/(const T& a, const Vector<T, vector_
 
 typedef Vector<double, 2> Vector2;
 typedef Vector<double, 3> Vector3;
+typedef Vector<int, 2> Point2;
 
 #include "Vector.impl.hpp"
